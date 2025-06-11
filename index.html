@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+   <meta name="author" content="Kamil Bilnik, Krzysztof Lis, Oliwier Majewski, Piotr Mucha, Kamil Grabowski">
+   <meta name="keywords" content="słownik, słowa, lotnictwo, zawodowe, technik lotniskowych słóżb operacyjnych, słownik lotniczy, słownik angielski, angielski, angielski zawodowy">
+  <meta name="description" content="Strona ze słownikiem Polsko angielskim i angielsko polskim">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>słownik</title>
+  <link rel="stylesheet" href="style.css">
+  
+</head>
+<body>
+  <div class="themetoggle">
+    <button id="toggleTheme">Zmień motyw</button>
+  </div>
+
+  <div class="container">
+    <h1>Słownik</h1>
+    <input type="text" id="search" placeholder="Wpisz słowo..." autocomplete="off">
+    <div id="suggestions" class="suggestions"></div>
+    <div id="result" class="result"></div>
+  </div>
+  <script>
+
+    const toggleBtn = document.getElementById('toggleTheme');
+toggleBtn.addEventListener('click', () => {
+  document.body.classList.toggle('dark');
+});
+
+ // Wstawiamy dane ręcznie jako pary angielskie-polskie
+const rawWords = `
+thrust  
+siła ciągu  
+lift  
+siła nośna  
+reference datum  
+płaszczyzna odniesienia  
+maintain an aircraft separation  
+utrzymywać separacje  
+refer to  
+odnosić się do  
+range  
+zasięg  
+Beacon (BCN)  
+radiolatarnia  
+DME  
+radioodległościomierz  
+inbound track  
+dolot  
+leg  
+odległość  
+divert  
+zmiana kierunku  
+air marshal  
+stróż powietrzny  
+marshal  
+stróż  
+behave in suspicious manner  
+zachowywać się podejrzanie  
+agitated  
+wzburzony  
+alert  
+alarm  
+abusive  
+natarczywy  
+handcuff (v)  
+zakuć  
+zip-tie  
+trytytka  
+restrain  
+powstrzymać  
+hazard  
+niebezpieczeństwo  
+prevent  
+zapobiegać  
+calm sb down  
+uspokoić kogoś  
+overcome gravity  
+pokonać grawitację  
+dew point  
+punkt rosy  
+CG  ( center of gravity)  
+środek ciężkości  
+determine  
+określać  
+broadcast  
+nadawać  
+Remote  
+zdalny  
+track  
+ścieżka  
+assault  
+napaść  
+security  
+zabezpieczenie  
+related incident  
+incydent związany z bezpieczeństwem  
+encounter  
+napotkać  
+hazardous  
+niebezpieczny  
+life threatening  
+zagrożenie życia  
+notify  
+powiadomić  
+precipitation  
+opady  
+atmospheric pressure  
+ciśnienie atmosferyczne  
+IFR (Instrument Flight Rules)  
+przepisy lotu według wskazań przyrządów  
+VFR (Visual Flight Rules)  
+przepisy lotu z widocznością  
+flight plan  
+plan lotu  
+route  
+trasa  
+seek  
+szukać  
+prevent collisions  
+zapobiegać kolizjom  
+vertical separation  
+pionowa separacja  
+lateral separation  
+boczna separacja  
+longitudinal separation  
+wzdłużna separacja  
+resposibilities  
+obowiązki  
+provide  
+zapewniać  
+airspace safety  
+bezpieczeństwo przestrzeni powietrznej  
+payload  
+ładowność  
+restraint  
+zabezpieczenie  
+payload restraint  
+ograniczenie ładowności  
+capacity  
+pojemność  
+concern  
+obawa / kwestia  
+space concerns  
+ograniczenia przestrzenne  
+estimate  
+oszacować  
+Air traffic control facility  
+ośrodek kontroli ruchu lotniczego  
+review a flight plan  
+przeglądać plan lotu  
+check completed  
+sprawdzenie zakończone  
+cockpit check  
+kontrola kokpitu  
+walk-around  
+obchód techniczny  
+tire check  
+kontrola opon  
+surface damage  
+uszkodzenia powierzchni  
+fan blade  
+łopatka wiatraka  
+maintenance  
+konserwacja  
+emergency safety devices  
+urządzenia bezpieczeństwa awaryjnego  
+wear (n)  
+zużycie  
+notable  
+zauważalny  
+bent  
+wygięty  
+cockpit instruments  
+przyrządy kokpitu  
+assess  
+ocenić  
+examine  
+badać  
+log book  
+dziennik pokładowy  
+external  
+zewnętrzny  
+scratch  
+zadrapanie  
+dent  
+wgniecenie  
+excessive  
+nadmierny  
+perform a check  
+wykonać kontrolę  
+replace  
+wymienić  
+nose wheel  
+przednie koło  
+flat  
+przebity (np. opona)  
+vent  
+wentyl  
+piloting  
+pilotowanie  
+clearance  
+zgoda  
+include  
+zawierać  
+draft  
+szkic  
+taxi  
+kołować  
+icy conditions  
+oblodzenie  
+on-blocks / off-blocks  
+na / poza stanowiskiem postojowym  
+light / lighten up  
+lekki / rozjaśnić  
+aircraft interior  
+wnętrze samolotu  
+keep a record  
+prowadzić rejestr  
+depart  
+odlecieć  
+tug  
+holownik  
+device  
+urządzenie  
+tow  
+holować  
+airport markings  
+oznaczenia lotniskowe  
+consider  
+brać pod uwagę  
+fuel efficiency  
+efektywność paliwowa  
+slush  
+błoto pośniegowe  
+assign  
+przydzielić  
+gust  
+podmuch  
+runway assignment  
+przydział pasa startowego  
+hail  
+grad  
+holding point  
+punkt oczekiwania  
+cloud cover  
+pokrywa chmurna  
+runway contamination  
+zanieczyszczenie pasa  
+patchy fog (BCFG)  
+miejscowa mgła  
+depend on  
+zależeć od  
+takeoff flight path  
+ścieżka startowa  
+abort  
+przerwać (start)  
+altitude  
+wysokość  
+efficiency  
+wydajność  
+velocity  
+prędkość  
+hydroplane  
+poślizg wodny (aquaplaning)  
+divide  
+dzielić  
+reach a high altitude  
+osiągnąć dużą wysokość  
+brake check  
+kontrola hamulców  
+tiller wheel  
+koło sterowne  
+sudden burst of wind  
+nagły podmuch wiatru  
+commit to takeoff  
+zdecydować się na start  
+take into account  
+brać pod uwagę  
+inoperative  
+niesprawny  
+achieve  
+osiągnąć  
+retract gear  
+schować podwozie  
+gear retraction  
+chowanie podwozia  
+reach V1  
+osiągnąć V1  
+generate lift  
+wytworzyć siłę nośną  
+engine failure  
+awaria silnika  
+negative  
+odmowa  
+Slat  
+Skrzela  
+Turboprop  
+silnik turbośmigłowy  
+turbine engine  
+silnik turbinowy  
+transreciver  
+urządzenie nadawczo-odbiorcze  
+runway surface  
+nawierzchnia pasa  
+Turn coordinator  
+zakrętomierz  
+airspeed indicator  
+prędkościomierz  
+squelch  
+tłumić szum  
+serious malfunction  
+poważna usterka  
+runway length  
+długość pasa  
+wing flaps settings  
+ustawienia klap  
+initial  
+początkowy  
+crew  
+załoga  
+state  
+stwierdzić  
+clearly state  
+jasno określić  
+location  
+lokalizacja  
+frequency change  
+zmiana częstotliwości  
+follow radio frequency changes  
+przestrzegać zmian częstotliwości  
+specific  
+konkretny  
+enter a runway  
+wjechać na pas  
+clarification  
+doprecyzowanie  
+Applicant  
+kandydat  
+Update (v)  
+aktualizować  
+Weather updates  
+aktualizacje pogodowe  
+Predict  
+przewidywać  
+Visibility  
+widoczność  
+Weather fronts  
+fronty atmosferyczne  
+VMC (Visual Meteorological Conditions)  
+warunki meteorologiczne do lotu z widocznością  
+IMC (Instrument Meteorological Conditions)  
+warunki meteorologiczne do lotu według przyrządów  
+Meteorology  
+meteorologia  
+Airway  
+droga lotnicza  
+Burn-off  
+spalanie paliwa  
+Departure point  
+punkt odlotu  
+Weather delays  
+opóźnienia spowodowane pogodą  
+Emergency  
+sytuacja zagrażająca życiu lub zdrowiu  
+equvalent airspeed  
+równoważna prędkość samolotu  
+true airspeed  
+rzeczywista prędkość samolotu  
+calibrated air speed  
+skalibrowana prędkość samolotu  
+Emergency equipment  
+wyposażenie awaryjne  
+Advisory  
+ostrzeżenie/informacja doradcza  
+Purpose  
+cel  
+Up-to-date  
+aktualny  
+Weather forecast  
+prognoza pogody  
+Wind speed  
+prędkość wiatru  
+Destination  
+miejsce docelowe  
+I'm relieved  
+czuję ulgę  
+Constantly  
+stale/ciągle  
+Airways routing  
+trasa drogami powietrznymi  
+Due to  
+z powodu  
+Arrival point  
+punkt przylotu  
+Increase  
+zwiększyć  
+Significant  
+znaczący  
+Found  
+znaleziony  
+Incorrect  
+niepoprawny  
+Light  
+światło  
+Off-blocks  
+zejście z bloków (rozpoczęcie kołowania)  
+Lighten up  
+odciążyć  
+Maintance  
+Konserwacja  
+`.trim().split('\n');
+
+const dictionaryENtoPL = {};
+const dictionaryPLtoEN = {};
+const wordList = [];
+
+for (let i = 0; i < rawWords.length; i += 2) {
+  const eng = rawWords[i].trim();
+  const pol = rawWords[i + 1]?.trim();
+  if (eng && pol) {
+    dictionaryENtoPL[eng.toLowerCase()] = pol;
+    dictionaryPLtoEN[pol.toLowerCase()] = eng;
+    wordList.push(eng, pol);
+  }
+}
+
+
+const input = document.getElementById('search');
+const suggestions = document.getElementById('suggestions');
+const result = document.getElementById('result');
+
+input.addEventListener('input', () => {
+  const val = input.value.toLowerCase();
+  suggestions.innerHTML = '';
+  if (val.length < 1) return;
+
+  const matches = wordList.filter(word => word.toLowerCase().startsWith(val)).slice(0, 10);
+  matches.forEach(match => {
+    const div = document.createElement('div');
+    div.textContent = match;
+    div.addEventListener('click', () => {
+      input.value = match;
+      showTranslation(match.toLowerCase());
+      suggestions.innerHTML = '';
+    });
+    suggestions.appendChild(div);
+  });
+});
+
+input.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    showTranslation(input.value.toLowerCase());
+    suggestions.innerHTML = '';
+  }
+});
+
+function showTranslation(word) {
+  const lower = word.toLowerCase();
+  let translation;
+
+  if (dictionaryENtoPL[lower]) {
+    translation = `<strong>${word}</strong> → <strong>${dictionaryENtoPL[lower]}</strong>`;
+  } else if (dictionaryPLtoEN[lower]) {
+    translation = `<strong>${dictionaryPLtoEN[lower]}</strong> → <strong>${word}</strong>`;
+  } else {
+    translation = "Nie znaleziono tłumaczenia.";
+  }
+
+  result.innerHTML = translation;
+}
+
+</script>
+</body>
+</html>
